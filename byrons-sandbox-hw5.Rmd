@@ -1,0 +1,34 @@
+---
+title: "Sandbox"
+author: "Byron"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  results = 'hide',
+  message = FALSE,
+  warning = FALSE,
+  fig.align = 'left')
+
+library(tidyverse)
+library(extrafont) # Ubuntu
+library(kableExtra)
+
+```
+
+# HW5
+
+```{r data}
+
+
+```
+
