@@ -22,13 +22,67 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(extrafont) # Ubuntu
 library(kableExtra)
+library(readr)
+library(NbClust)
+library(flexclust)
 
 ```
 
-# HW5
+# Homework 5
 
-```{r data}
+```{r data, warning=FALSE, message=FALSE}
+urlfile = "https://raw.githubusercontent.com/JiaYue-Ong/MUSA5000-Statistical-and-Data-Mining-Homework4-5/refs/heads/main/RegressionData.csv"
 
+blockgroup <- read.csv(url(urlfile))
+
+df<- data.frame(scale(blockgroup[-1:0]))
 
 ```
 
+# Identify the optimal number of clusters based on the scree plot and the 26+ diagnostics available in the NbClust package in R.
+
+```{r Scree plot}
+bgss <- (nrow(df)-1)*sum(apply(df,2,var))
+
+for (i in 2:20) bgss[i] <- sum(kmeans(df, 
+                                     centers=i)$withinss)
+
+plot(1:20, bgss, type="b", xlab="Number of Clusters",
+     ylab="Within groups sum of squares")
+```
+
+```{r NbClust}
+set.seed(1234)
+
+nc <- NbClust(df, min.nc=2, max.nc=15, method="kmeans", index="all")
+
+table(nc$Best.n[1,])
+
+par(mfrow=c(1,1)) 
+
+barplot(table(nc$Best.n[1,]),
+        xlab="Numer of Clusters", ylab="Number of Criteria",
+        main="Number of Clusters Chosen by 26 Criteria")
+```
+
+# Run the k-means cluster analysis using the optimal number of clusters (i.e., the number of clusters that’s identified as the best by the largest number of diagnostics in NbClust).
+
+```{r k-means cluster}
+set.seed(1234)
+fit.km <- kmeans(df, 2, nstart=25)
+#Let's look at the number of observations in each cluster
+fit.km$size
+
+round(fit.km$centers, 2)
+fit.km$cluster
+```
+
+# As shown in the slides, use the aggregate command in R to examine the mean values of the variables in each of the resulting clusters.
+
+```{r examine the mean values of the variables in each of the resulting clusters}
+cbind(round(aggregate(blockgroup[-1:0], by=list(cluster=fit.km$cluster), mean),1),fit.km$size)
+```
+
+# Specify whether the cluster solution makes sense. If it does, attempt to come up with descriptive names for each of the resulting clusters (see the slide called “Do Variables Have To Be Lat & Lon?” for an example of creative and descriptive names for clusters).
+
+# Note: be sure you use the scale command to standardize the variables before running the cluster analysis, as is done in the code shown in class.
