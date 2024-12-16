@@ -19,7 +19,7 @@ library(spatstat.explore)
 library(sf)
 ```
 
-setwd("./MUSA5000-Statistical-and-Data-Mining-Homework4-5")
+setwd("~/02. MUSA Year 1/MUSA 5000- Statistical And Data Mining Methods For Urban Data Analysis/Stats HW4")
 
 # Import data
 ```{r import data}
@@ -33,6 +33,13 @@ Philly_Zip<-st_read("./HW4/Philadelphia_ZipCodes.shp")
 
 # Point Pattern
 ```{r}
+# Plot points and boundary
+ggplot() +
+  geom_sf(data = Philly_Zip, fill = "lightblue", color = "black") +
+  geom_sf(data = Markets, color = "red", size = 2) +
+  theme_minimal()
+  
+# Create a ppp
 pp <-as.ppp(Markets)
 ```
 
