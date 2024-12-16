@@ -1,0 +1,104 @@
+---
+title: "Homework 4"
+author: "Ong Jia Yue"
+date: "2024-12-15"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+  results = 'hide',
+  message = FALSE,
+  warning = FALSE,
+  fig.align = 'left')
+
+library(spatstat)
+library(spatstat.explore)
+library(sf)
+```
+
+setwd("./MUSA5000-Statistical-and-Data-Mining-Homework4-5")
+
+# Import data
+```{r import data}
+
+Philly<- st_read("./HW4/Philadelphia.shp")
+
+Markets<-st_read("./HW4/Philadelphia_Farmers_Markets201302.shp")
+
+Philly_Zip<-st_read("./HW4/Philadelphia_ZipCodes.shp")
+```
+
+# Point Pattern
+```{r}
+pp <-as.ppp(Markets)
+```
+
+# Nearest Neighbor Analysis
+```{r}
+#Computes the distance from each point to its nearest neighbour in a point pattern.
+nnd <- nndist.ppp(pp)
+
+#Using the formulas on the slides, we calculate Mean Observed Distance,
+#Mean Expected Distance and the Standard Error.
+MeanObsDist <- mean(nnd)
+
+#The st_area command calculates the area of the study area that you use.
+#Here it's the minimum enclosing rectangle, but it doesn't have to be - it 
+#could be any shapefile you import from ArcGIS (or generate in R) that 
+#corresponds to the study area.
+MeanExpDist <-as.numeric(
+  0.5 / sqrt(nrow(Markets) / st_area(Philly))
+)
+
+SE <- as.numeric(
+  0.26136 / sqrt(nrow(Markets)*nrow(Markets) / st_area(Philly))
+)
+
+#Calculating the z-score
+zscore <- (MeanObsDist - MeanExpDist)/SE
+
+#Statistical test
+#Here, if the z score is positive, we do an upper-tailed test and if the 
+#z score is negative we do a lower-tailed test to come up with the p-value.
+pval<-ifelse(zscore > 0, 1 - pnorm(zscore), pnorm(zscore))
+#Calculating the NNI
+NNI <- MeanObsDist / MeanExpDist
+pval
+NNI
+```
+
+# K-Function Analysis
+```{r}
+#If we double click on the khat data set on the right, it will have 513 observations
+#and 5 variables. We are interested in 2 of the variables: 
+#-- r, which is the distance that goes in increments of 138.8693
+#-- iso, which is the k-function calculated with Ripley's edge correction
+
+#K-Functions
+khat <-Kest(pp, rmax=250000) #,correction="Ripley")
+
+#Plots Ripley's K function calculated with Ripley's isotropic edge correction, with
+#line width 2, axis labels, and a main title.
+plot(khat$r,khat$iso,xlab="r", ylab="Ripley's K",
+     main="Ripley's Estimated K-Function",
+     cex.lab=1.6,cex.axis=1.5,cex.main=1.5,lty=1,lwd=2)
+
+# Overlays the theoretical K-function under CSR with a dashed (lty=8) line.
+lines(khat$r,khat$theo,lty=8, lwd=2) 
+
+#Code to compute the Ripley's Simulation Confidence Envelopes
+#Computes confidence envelopes using n=199 simulations. Here, nrank=1 means we're
+#looking at the lowest and highest values of the simulated envelopes. Here,
+#alpha = 2 * nrank/(1 + nsim) = 2*1/200 = 0.01
+#spatstat::envelope is to specify that the envelope command is in the spatstat 
+#library and not the boot library.
+Kenv <- spatstat.explore::envelope(pp,fun="Kest", rmax=250000, nsim=9, nrank=1) 
+
+# Plots Ripley's K function with 99% simulation # envelopes, axis labels, and a title.
+plot(Kenv,xlab="r",ylab="Khat(r)", cex.lab=1.6,cex.axis=1.5,main= 
+       "Ripley's Khat with Confidence Envelopes",cex.main=1.5,lwd=2)
+```
+
