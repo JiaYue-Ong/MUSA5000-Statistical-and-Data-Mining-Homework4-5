@@ -146,7 +146,7 @@ plot(L2,xlab="r",ylab="Lhat(r)", cex.lab=1.6,cex.axis=1.5,
 ```{r Map}
 ggplot() +
   geom_sf(data = Philly_Zip, aes(fill = MedIncome), color = "black") +
-  geom_sf(data = Markets, color = "red", size = 2) +
+  geom_sf(data = Markets, color = "blue", size = 2) +
   scale_fill_viridis_c(option = "cividis")+
   theme_minimal()
 ```
