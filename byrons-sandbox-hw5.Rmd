@@ -25,7 +25,17 @@ library(kableExtra)
 library(readr)
 library(NbClust)
 library(flexclust)
+library(sf)
+library(ggplot2)
+library(gridExtra)
 
+palette5 <- c("#f0f9e8","#bae4bc","#7bccc4","#43a2ca","#0868ac")
+flatreds5 <- c('#f9ebea','#e6b0aa','#cd6155', '#cd6155','#7b241c')
+flatblues5 <- c('#ebf5fb', '#a9cce3', '#5499c7', '#2471a3',  '#1a5276')
+flatsage5 <- c('#f6fff8','#eaf4f4', '#cce3de','#a4c3b2','#6b9080')
+flatoranges5 <- c('#fff8e1', '#ffcc80', '#ffab40', '#ff8f00', '#ff6f00')
+
+source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 ```
 
 # Homework 5
@@ -86,7 +96,111 @@ cbind(round(aggregate(blockgroup[-1:0], by=list(cluster=fit.km$cluster), mean),1
 # Export the table containing the cluster ID of each observation into a .csv file
 ```{r}
 df2<-cbind(blockgroup,list(cluster=fit.km$cluster))
-write.csv(df2,file="Spatial_DIstribution_Cluster")
+write.csv(df2,file="Spatial_DIstribution_Cluster.csv")
+```
+
+# Regression Data Shapefile
+```{r}
+shp<-st_read("RegressionData.shp")
+
+# median price per sqft
+price_map <- ggplot() +
+  geom_sf(data = shp, color = 'grey80', fill = 'grey90') +
+  geom_sf(data = shp, mapping=aes(fill = q5(MEDHVAL)), color = NA, alpha = 0.75)+
+  scale_fill_manual(values = flatblues5,
+                    labels = qBr(shp, "MEDHVAL"), 
+                    name = 'Median Household Value') +
+  theme_void() +
+  
+  theme(
+    legend.position = "right",
+    text = element_text(family = "Lato"), 
+    plot.title = element_text(hjust = 0, face = "bold"),
+    plot.subtitle = element_text(hjust = 0)) +
+  labs(
+    title = "Median household values across blocks in Philadelphia",
+    subtitle = "Values classified in quintiles")
+
+
+vacant_map <- ggplot() +
+  geom_sf(data = shp, color = 'grey80', fill = 'grey90') +
+  geom_sf(data = shp, mapping=aes(fill = q5(PCTVACANT)), color = NA, alpha = 0.75)+
+  scale_fill_manual(values = flatreds5,
+                    labels = qBr(shp, "PCTVACANT"), 
+                    name = 'Vacant House Units (%)') +
+  theme_void() +
+  
+  theme(
+    legend.position = "right",
+    text = element_text(family = "Lato"), 
+    plot.title = element_text(hjust = 0, face = "bold"),
+    plot.subtitle = element_text(hjust = 0)) +
+  labs(
+    title = "Vacant House Units (%) ",
+    subtitle = "Values classified in quintiles")
+
+singles_map <- ggplot() +
+  geom_sf(data = shp, color = 'grey80', fill = 'grey90') +
+  geom_sf(data = shp, mapping=aes(fill = q5(PCTSINGLES)), color = NA, alpha = 0.75)+
+  scale_fill_manual(values = flatreds5,
+                    labels = qBr(shp, "PCTSINGLES"), 
+                    name = 'Single House Units (%)') +
+  theme_void() +
+  
+  theme(
+    legend.position = "right",
+    text = element_text(family = "Lato"), 
+    plot.title = element_text(hjust = 0, face = "bold"),
+    plot.subtitle = element_text(hjust = 0)) +
+  labs(
+    title = "Single House Units (%) ",
+    subtitle = "Values classified in quintiles")
+
+bachelor_map <- ggplot() +
+  geom_sf(data = shp, color = 'grey80', fill = 'grey90') +
+  geom_sf(data = shp, mapping=aes(fill = q5(PCTBACHMOR)), color = NA, alpha = 0.75)+
+  scale_fill_manual(values = flatsage5,
+                    labels = qBr(shp, "PCTBACHMOR"), 
+                    name = 'Bachelors Degree (%)') +
+  theme_void() +
+  
+  theme(
+    legend.position = "right",
+    text = element_text(family = "Lato"), 
+    plot.title = element_text(hjust = 0, face = "bold"),
+    plot.subtitle = element_text(hjust = 0)) +
+  labs(
+    title = "Population with Bachelor's degree (%)",
+    subtitle = "Values classified in quintiles")
+
+poverty_map <- ggplot() +
+  geom_sf(data = shp, color = 'grey80', fill = 'grey90') +
+  geom_sf(data = shp, mapping=aes(fill = q5(MEDHHINC)), color = NA, alpha = 0.75)+
+  scale_fill_manual(values = flatblues5,
+                    labels = qBr(shp, "MEDHHINC"), 
+                    name = 'Median Household Income') +
+  theme_void()+
+  
+  theme(
+    legend.position = "right",
+    text = element_text(family = "Lato"), 
+    plot.title = element_text(hjust = 0, face = "bold"),
+    plot.subtitle = element_text(hjust = 0)) +
+  
+    labs(
+    title = "Median household income across blocks in Philadelphia",
+    subtitle = "Values classified in quintiles")
+
+price_map
+grid.arrange(poverty_map,  singles_map, bachelor_map, vacant_map,
+             top = textGrob("Spatial Distribution of different variables",
+                            gp = gpar(fontsize = 11, fontface = "bold", fontfamily = "Lato")),
+             layout_matrix = cbind(c(1, 2),
+                                   c(1, 2),
+                                   c(1, 2),
+                                   c(3, 4 ),
+                                   c(3, 4 ),
+                                   c(3, 4 )))
 ```
 
 
