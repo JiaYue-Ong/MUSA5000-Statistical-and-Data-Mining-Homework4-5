@@ -83,6 +83,13 @@ fit.km$cluster
 cbind(round(aggregate(blockgroup[-1:0], by=list(cluster=fit.km$cluster), mean),1),fit.km$size)
 ```
 
+# Export the table containing the cluster ID of each observation into a .csv file
+```{r}
+df2<-cbind(blockgroup,list(cluster=fit.km$cluster))
+write.csv(df2,file="Spatial_DIstribution_Cluster")
+```
+
+
 # Specify whether the cluster solution makes sense. If it does, attempt to come up with descriptive names for each of the resulting clusters (see the slide called “Do Variables Have To Be Lat & Lon?” for an example of creative and descriptive names for clusters).
 
 # Note: be sure you use the scale command to standardize the variables before running the cluster analysis, as is done in the code shown in class.
