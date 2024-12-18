@@ -98,6 +98,17 @@ cbind(round(aggregate(blockgroup[-1:0], by=list(cluster=fit.km$cluster), mean),1
 df2<-cbind(blockgroup,list(cluster=fit.km$cluster))
 write.csv(df2,file="Spatial_DIstribution_Cluster.csv")
 ```
+# Alternatively, join data before exporting
+```{r}
+shp <- st_read("./RegressionData.shp") %>% st_set_crs(3857)
+df2 <- df2 %>% left_join(shp) %>% st_as_sf() %>% st_set_crs(3857)
+st_crs(df2)
+st_write(df2, 'clusters.shp', append=F)
+tmap::qtm(shp)
+tmap::tmap_options(check.and.fix = TRUE)
+
+```
+
 
 # Regression Data Shapefile
 ```{r}
