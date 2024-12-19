@@ -107,6 +107,7 @@ Kenv <- spatstat.explore::envelope(pp2,fun="Kest", rmax=250000, nsim=99, nrank=1
 # Plots Ripley's K function with 99% simulation envelopes, axis labels, and a title.*
 
 # Plots Ripley's K function with 99% simulation # envelopes, axis labels, and a title.
+
 plot(Kenv,xlab="r",ylab="Khat(r)", cex.lab=1.6,cex.axis=1.5,main= 
        "Ripley's Khat with Confidence Envelopes",cex.main=1.5,lwd=2)
 ```
