@@ -202,16 +202,15 @@ poverty_map <- ggplot() +
     title = "Median household income across blocks in Philadelphia",
     subtitle = "Values classified in quintiles")
 
-price_map
-grid.arrange(poverty_map,  singles_map, bachelor_map, vacant_map,
+grid.arrange(price_map, poverty_map,  singles_map, bachelor_map, vacant_map,
              top = textGrob("Spatial Distribution of different variables",
                             gp = gpar(fontsize = 11, fontface = "bold", fontfamily = "Lato")),
-             layout_matrix = cbind(c(1, 2),
-                                   c(1, 2),
-                                   c(1, 2),
-                                   c(3, 4 ),
-                                   c(3, 4 ),
-                                   c(3, 4 )))
+             layout_matrix = cbind(c(1, 2, 3),
+                                   c(1, 2, 3),
+                                   c(1, 2, 3),
+                                   c(4, 5, 6),
+                                   c(4, 5, 6),
+                                   c(4, 5, 6)))
 ```
 
 
