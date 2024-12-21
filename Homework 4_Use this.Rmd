@@ -88,9 +88,19 @@ pval
 NNI
 ```
 
+# Maximum distance for k-function
+```{r warning=FALSE, message=FALSE, cache=FALSE}
+max.distance <- max(proxy::dist(data.frame(cbind(x=coords2$X, y=coords2$Y)),
+                                data.frame(cbind(x=coords2$X, y=coords2$Y)),
+                                method="euclidean"))
+max.distance
+
+max.distance/2
+```
+
 # K-Function Analysis
 ```{r K-Function Analysis}
-khat <-Kest(pp2, rmax=25000) #,correction="Ripley")
+khat <-Kest(pp2, rmax=29000) #,correction="Ripley")
 #Plots Ripley's K function calculated with Ripley's isotropic edge correction, with line width 2, axis labels, and a main title.
 plot(khat$r,khat$iso,xlab="r", ylab="Ripley's K",
      main="Ripley's Estimated K-Function",
@@ -103,7 +113,7 @@ lines(khat$r,khat$theo,lty=8, lwd=2)
 #Computes confidence envelopes using n=199 simulations. Here, nrank=1 means we're looking at the lowest and highest values of the simulated envelopes. Here, alpha = 2 * nrank/(1 + nsim) = 2*1/200 = 0.01
 #spatstat::envelope is to specify that the envelope command is in the spatstat library and not the boot library.
 
-Kenv <- spatstat.explore::envelope(pp2,fun="Kest",rmax=25000, nsim=99, nrank=1) 
+Kenv <- spatstat.explore::envelope(pp2,fun="Kest",rmax=29000, nsim=99, nrank=1) 
 
 # Plots Ripley's K function with 99% simulation # envelopes, axis labels, and a title.
 
@@ -111,14 +121,10 @@ plot(Kenv,xlab="r",ylab="Khat(r)", cex.lab=1.6,cex.axis=1.5,main=
        "Ripley's Khat with Confidence Envelopes",cex.main=1.5,lwd=2)
 ```
 
-
-
-
-
 # L-Function Analysis
 ```{r L-Function Analysis}
 #Computes Ripley's L* for each sample event
-lhat <- Lest(pp2, rmax=75000) 
+lhat <- Lest(pp2, rmax=29000) 
 #Plots Ripley's L function calculated with line width 2, Ripley's isotropic edge correction, with axis labels, and a main title.
 plot(lhat$r,lhat$iso-lhat$r, xlab="r",ylab="Ripley's L",cex.lab=1.6,  
      cex.axis=1.5,cex.main=1.5,lty=1,lwd=2, main="Ripley's Estimated L-Function") 
@@ -127,7 +133,7 @@ lines(lhat$r,lhat$theo-lhat$r,lty=8,lwd=2)
 
 #Code to compute the Ripley's Simulation Confidence Envelopes
 #Computes confidence envelopes using n=199 simulations. Here, nrank=1 means we're looking at the lowest and highest values of the simulated envelopes. Here, alpha = 2 * nrank/(1 + nsim) = 2*1/200 = 0.01
-Lenv <- spatstat.explore::envelope(pp2,fun="Lest", rmax=25000, nsim=99,nrank=1)
+Lenv <- spatstat.explore::envelope(pp2,fun="Lest", rmax=29000, nsim=99,nrank=1)
 
 # Plots Ripley's L function with 99% simulation envelopes, axis labels, and a title.
 plot(Lenv,xlab="r",ylab="Lhat(r)", cex.lab=1.6,cex.axis=1.5,
